@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Tarefas - IMPULSA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #001a4d 0%, #003d99 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 26, 77, 0.3);
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #001a4d 0%, #003d99 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .header.hidden {
+            padding: 10px 30px;
+            opacity: 0.7;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #c4a747;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 30px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select,
+        button {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select {
+            border-color: #c4a747;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #c4a747;
+            box-shadow: 0 0 8px rgba(196, 167, 71, 0.3);
+        }
+
+        select {
+            background: white;
+            cursor: pointer;
+        }
+
+        button {
+            background: linear-gradient(135deg, #001a4d 0%, #003d99 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 26, 77, 0.4);
+        }
+
+        .date-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .date-group input {
+            flex: 1;
+        }
+
+        .date-group button {
+            padding: 12px 20px;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-export {
+            padding: 10px 15px;
+            background: #c4a747;
+            color: #001a4d;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .btn-export:hover {
+            background: #a68a3a;
+            color: white;
+        }
+
+        .btn-clickup {
+            padding: 10px 15px;
+            background: #7B68EE;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .btn-clickup:hover {
+            background: #6A5ACD;
+        }
+
+        .tasks-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .task-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #c4a747;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .task-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-item.completed {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-text {
+            color: #001a4d;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .task-info {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .task-date {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .task-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .tag-trabalho {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .tag-igreja {
+            background: #F3E5F5;
+            color: #7B1FA2;
+        }
+
+        .tag-pessoal {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+
+        .task-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .btn-feito {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-fazer {
+            background: #c4a747;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #001a4d;
+            color: #c4a747;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .filter-btn.active {
+            background: #001a4d;
+            color: #c4a747;
+            border-color: #001a4d;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 26, 77, 0.5);
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 26, 77, 0.3);
+            margin: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #001a4d;
+            font-size: 22px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        textarea {
+            padding: 12px 15px;
+            border: 2px solid #c4a747;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #001a4d 0%, #003d99 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" id="header">
+            <h1>📋 Minhas Tarefas</h1>
+            <div class="subtitle">IMPULSA - Organize seu dia</div>
+        </div>
+
+        <div class="content" id="content">
+            <div class="input-section">
+                <input 
+                    type="text" 
+                    id="taskInput" 
+                    placeholder="Descreva sua tarefa..."
+                    autocomplete="off"
+                >
+                <div class="date-group">
+                    <input type="date" id="dateInput">
+                    <button type="button" onclick="definirHoje()">Hoje</button>
+                </div>
+                <select id="tagInput">
+                    <option value="">Selecione uma categoria...</option>
+                    <option value="trabalho">💼 Trabalho</option>
+                    <option value="igreja">⛪ Igreja</option>
+                    <option value="pessoal">👤 Pessoal</option>
+                </select>
+                <button type="button" onclick="adicionarTarefa()">Adicionar Tarefa</button>
+            </div>
+
+            <div class="export-buttons">
+                <button type="button" class="btn-export" onclick="exportarCSV()">📊 CSV</button>
+                <button type="button" class="btn-export" onclick="exportarExcel()">📈 Excel</button>
+                <button type="button" class="btn-export" onclick="exportarPDF()">📄 PDF</button>
+                <button type="button" class="btn-clickup" onclick="levarParaClickUp()">🚀 ClickUp</button>
+            </div>
+
+            <div class="filter-buttons">
+                <button type="button" class="filter-btn active" onclick="filtrarTarefas('todas')">Todas</button>
+                <button type="button" class="filter-btn" onclick="filtrarTarefas('fazer')">A Fazer</button>
+                <button type="button" class="filter-btn" onclick="filtrarTarefas('feito')">Feitas</button>
+            </div>
+
+            <div class="tasks-section" id="tasksList">
+                <div class="empty-state">
+                    <p>Nenhuma tarefa ainda. Comece adicionando uma! 🚀</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="detalhesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalhes da Tarefa</h2>
+                <button type="button" class="close-btn" onclick="fecharModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label style="color: #001a4d; font-weight: bold;">Tarefa:</label>
+                    <input type="text" id="modalTaskDesc" style="width: 100%; margin-top: 8px;" disabled>
+                </div>
+                <div>
+                    <label style="color: #001a4d; font-weight: bold;">Data:</label>
+                    <input type="date" id="modalTaskDate" style="width: 100%; margin-top: 8px;" disabled>
+                </div>
+                <div>
+                    <label style="color: #001a4d; font-weight: bold;">Categoria:</label>
+                    <input type="text" id="modalTaskTag" style="width: 100%; margin-top: 8px;" disabled>
+                </div>
+                <div>
+                    <label style="color: #001a4d; font-weight: bold;">Observações:</label>
+                    <textarea id="observacaoInput" placeholder="Digite suas observações aqui..." style="margin-top: 8px;"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="fecharModal()">Fechar</button>
+                    <button type="button" class="btn-save" onclick="salvarObservacao()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edição -->
+    <div class="modal" id="edicaoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Tarefa</h2>
+                <button type="button" class="close-btn" onclick="fecharEdicaoModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label style="color: #001a4d; font-weight: bold;">Tarefa:</label>
+                    <input type="text" id="editTaskDesc" style="width: 100%; margin-top: 8px;">
+                </div>
+                <div style="margin-top: 15px;">
+                    <label style="color: #001a4d; font-weight: bold;">Data:</label>
+                    <input type="date" id="editTaskDate" style="width: 100%; margin-top: 8px;">
+                </div>
+                <div style="margin-top: 15px;">
+                    <label style="color: #001a4d; font-weight: bold;">Categoria:</label>
+                    <select id="editTaskTag" style="width: 100%; margin-top: 8px;">
+                        <option value="">Selecione uma categoria...</option>
+                        <option value="trabalho">💼 Trabalho</option>
+                        <option value="igreja">⛪ Igreja</option>
+                        <option value="pessoal">👤 Pessoal</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="fecharEdicaoModal()">Cancelar</button>
+                    <button type="button" class="btn-save" onclick="salvarEdicao()">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tarefas = [];
+        let filtroAtual = 'todas';
+        let tarefaAtualModal = null;
+
+        // Inicializar ao carregar
+        window.addEventListener('load', function() {
+            inicializarApp();
+        });
+
+        function inicializarApp() {
+            let tarefasSalvas = JSON.parse(localStorage.getItem('tarefas')) || [];
+            tarefas = tarefasSalvas.filter(t => {
+                const dataTarefa = new Date(t.data + 'T00:00:00');
+                const dataLimite = new Date('2026-08-10T00:00:00');
+                return dataTarefa >= dataLimite;
+            });
+            salvarTarefas();
+            definirDataHoje();
+            renderizarTarefas();
+
+            // Controlar header
+            const content = document.getElementById('content');
+            const header = document.getElementById('header');
+
+            content.addEventListener('scroll', function() {
+                if (this.scrollTop > 50) {
+                    header.classList.add('hidden');
+                } else {
+                    header.classList.remove('hidden');
+                }
+            });
+        }
+
+        function definirDataHoje() {
+            const hoje = new Date();
+            const ano = hoje.getFullYear();
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            document.getElementById('dateInput').value = `${ano}-${mes}-${dia}`;
+        }
+
+        function definirHoje() {
+            definirDataHoje();
+        }
+
+        function adicionarTarefa() {
+            const descricao = document.getElementById('taskInput').value.trim();
+            const data = document.getElementById('dateInput').value;
+            const tag = document.getElementById('tagInput').value;
+
+            if (!descricao) {
+                alert('Descreva a tarefa!');
+                return;
+            }
+            if (!tag) {
+                alert('Selecione uma categoria!');
+                return;
+            }
+
+            tarefas.push({
+                id: Date.now(),
+                descricao: descricao,
+                data: data,
+                tag: tag,
+                feita: false,
+                observacao: ''
+            });
+
+            salvarTarefas();
+            document.getElementById('taskInput').value = '';
+            document.getElementById('tagInput').value = '';
+            definirDataHoje();
+            renderizarTarefas();
+        }
+
+        function mudarStatus(id, novoStatus) {
+            const tarefa = tarefas.find(t => t.id === id);
+            if (tarefa) {
+                tarefa.feita = novoStatus;
+                salvarTarefas();
+                renderizarTarefas();
+            }
+        }
+
+        function deletarTarefa(id) {
+            if (confirm('Deletar tarefa?')) {
+                tarefas = tarefas.filter(t => t.id !== id);
+                salvarTarefas();
+                renderizarTarefas();
+            }
+        }
+
+        function abrirModal(id) {
+            const tarefa = tarefas.find(t => t.id === id);
+            if (tarefa) {
+                tarefaAtualModal = id;
+                document.getElementById('modalTaskDesc').value = tarefa.descricao;
+                document.getElementById('modalTaskDate').value = tarefa.data;
+                document.getElementById('modalTaskTag').value = obterNomeTag(tarefa.tag);
+                document.getElementById('observacaoInput').value = tarefa.observacao || '';
+                document.getElementById('detalhesModal').classList.add('active');
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById('detalhesModal').classList.remove('active');
+        }
+
+        function abrirEdicaoModal() {
+            const tarefa = tarefas.find(t => t.id === tarefaAtualModal);
+            if (tarefa) {
+                document.getElementById('editTaskDesc').value = tarefa.descricao;
+                document.getElementById('editTaskDate').value = tarefa.data;
+                document.getElementById('editTaskTag').value = tarefa.tag;
+                document.getElementById('detalhesModal').classList.remove('active');
+                document.getElementById('edicaoModal').classList.add('active');
+            }
+        }
+
+        function fecharEdicaoModal() {
+            document.getElementById('edicaoModal').classList.remove('active');
+            abrirModal(tarefaAtualModal);
+        }
+
+        function salvarObservacao() {
+            const tarefa = tarefas.find(t => t.id === tarefaAtualModal);
+            if (tarefa) {
+                tarefa.observacao = document.getElementById('observacaoInput').value;
+                salvarTarefas();
+                renderizarTarefas();
+                fecharModal();
+            }
+        }
+
+        function salvarEdicao() {
+            const tarefa = tarefas.find(t => t.id === tarefaAtualModal);
+            if (tarefa) {
+                tarefa.descricao = document.getElementById('editTaskDesc').value.trim();
+                tarefa.data = document.getElementById('editTaskDate').value;
+                tarefa.tag = document.getElementById('editTaskTag').value;
+                salvarTarefas();
+                renderizarTarefas();
+                fecharEdicaoModal();
+                fecharModal();
+            }
+        }
+
+        function obterNomeTag(tag) {
+            const tags = {
+                'trabalho': '💼 Trabalho',
+                'igreja': '⛪ Igreja',
+                'pessoal': '👤 Pessoal'
+            };
+            return tags[tag] || '';
+        }
+
+        function filtrarTarefas(filtro) {
+            filtroAtual = filtro;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderizarTarefas();
+        }
+
+        function renderizarTarefas() {
+            const tasksList = document.getElementById('tasksList');
+
+            let tarefasFiltradas = tarefas;
+            if (filtroAtual === 'fazer') {
+                tarefasFiltradas = tarefas.filter(t => !t.feita);
+            } else if (filtroAtual === 'feito') {
+                tarefasFiltradas = tarefas.filter(t => t.feita);
+            }
+
+            if (tarefasFiltradas.length === 0) {
+                tasksList.innerHTML = '<div class="empty-state"><p>Nenhuma tarefa 😊</p></div>';
+                return;
+            }
+
+            tasksList.innerHTML = tarefasFiltradas.map(t => `
+                <div class="task-item ${t.feita ? 'completed' : ''}" onclick="abrirModal(${t.id})">
+                    <div class="task-content">
+                        <div class="task-text">${t.descricao}</div>
+                        <div class="task-info">
+                            <span class="task-date">📅 ${new Date(t.data + 'T00:00:00').toLocaleDateString('pt-BR')}</span>
+                            <span class="task-tag tag-${t.tag}">${obterNomeTag(t.tag)}</span>
+                        </div>
+                        ${t.observacao ? '<div style="color: #c4a747; font-size: 12px;">📝 Tem observação</div>' : ''}
+                    </div>
+                    <div class="task-buttons">
+                        <button type="button" class="btn-small btn-edit" onclick="abrirEdicaoModal(); event.stopPropagation();">✏️</button>
+                        <button type="button" class="btn-small ${t.feita ? 'btn-fazer' : 'btn-feito'}" onclick="mudarStatus(${t.id}, ${!t.feita}); event.stopPropagation();">${t.feita ? '↺' : '✓'}</button>
+                        <button type="button" class="btn-small btn-delete" onclick="deletarTarefa(${t.id}); event.stopPropagation();">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function salvarTarefas() {
+            localStorage.setItem('tarefas', JSON.stringify(tarefas));
+        }
+
+        function levarParaClickUp() {
+            if (tarefas.length === 0) {
+                alert('Nenhuma tarefa!');
+                return;
+            }
+
+            const texto = tarefas.map(t => 
+                `📌 ${t.descricao}\n📅 ${new Date(t.data + 'T00:00:00').toLocaleDateString('pt-BR')}\n🏷️ ${obterNomeTag(t.tag)}\n✅ ${t.feita ? 'Feita' : 'A Fazer'}`
+            ).join('\n\n---\n\n');
+
+            navigator.clipboard.writeText(texto).then(() => {
+                alert('✅ Copiado! Cole no ClickUp');
+            });
+        }
+
+        function exportarCSV() {
+            if (tarefas.length === 0) {
+                alert('Sem tarefas!');
+                return;
+            }
+
+            let csv = 'Tarefa,Data,Categoria,Status,Observações\n';
+            tarefas.forEach(t => {
+                csv += `"${t.descricao}","${new Date(t.data + 'T00:00:00').toLocaleDateString('pt-BR')}","${obterNomeTag(t.tag)}","${t.feita ? 'Feita' : 'A Fazer'}","${(t.observacao || '').replace(/"/g, '""')}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tarefas_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.csv`;
+            a.click();
+        }
+
+        function exportarExcel() {
+            alert('Para Excel, use o botão CSV e abra no Excel!');
+        }
+
+        function exportarPDF() {
+            alert('Para PDF, use o botão CSV e converta online!');
+        }
+    </script>
+</body>
+</html>

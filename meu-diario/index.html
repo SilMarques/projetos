@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Diário - IMPULSA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #001a4d 0%, #003d99 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 26, 77, 0.3);
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #001a4d 0%, #003d99 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .header-subtitle {
+            color: #c4a747;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .nome-diario {
+            background: rgba(196, 167, 71, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 14px;
+            border: 1px solid #c4a747;
+            color: #c4a747;
+        }
+
+        .content {
+            padding: 30px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .nome-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .nome-section label {
+            display: block;
+            color: #001a4d;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .nome-section input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #c4a747;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .nome-section input:focus {
+            outline: none;
+            border-color: #001a4d;
+            box-shadow: 0 0 8px rgba(0, 26, 77, 0.3);
+        }
+
+        .calendario-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid #c4a747;
+        }
+
+        .calendario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-nav {
+            padding: 8px 12px;
+            background: #c4a747;
+            color: #001a4d;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-nav:hover {
+            background: #a68a3a;
+            color: white;
+        }
+
+        .mes-ano {
+            color: #001a4d;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .calendario-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .dia-semana {
+            text-align: center;
+            font-weight: bold;
+            color: #001a4d;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .dia {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid #e0e0e0;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .dia:hover {
+            border-color: #c4a747;
+        }
+
+        .dia.outro-mes {
+            color: #ccc;
+            background: #f5f5f5;
+        }
+
+        .dia.preenchido {
+            background: #c4a747;
+            color: white;
+        }
+
+        .dia.hoje {
+            border: 3px solid #001a4d;
+        }
+
+        .data-section {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .data-section label {
+            display: block;
+            color: #001a4d;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .data-input-group {
+            flex: 1;
+        }
+
+        .data-section input[type="date"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #c4a747;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .data-section input[type="date"]:focus {
+            outline: none;
+            border-color: #001a4d;
+            box-shadow: 0 0 8px rgba(0, 26, 77, 0.3);
+        }
+
+        .btn-hoje {
+            padding: 12px 20px;
+            background: #001a4d;
+            color: #c4a747;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-hoje:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 26, 77, 0.4);
+        }
+
+        .versiculo-section {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid #c4a747;
+        }
+
+        .versiculo-title {
+            color: #001a4d;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .versiculo-text {
+            color: #5d4037;
+            font-style: italic;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-section label {
+            display: block;
+            color: #001a4d;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .emoji-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .emoji-btn {
+            padding: 8px 12px;
+            background: white;
+            border: 2px solid #c4a747;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .emoji-btn:hover {
+            border-color: #001a4d;
+            background: #f0f4ff;
+            transform: scale(1.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #c4a747;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #001a4d;
+            box-shadow: 0 0 8px rgba(0, 26, 77, 0.3);
+        }
+
+        .buttons-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-adicionar {
+            background: linear-gradient(135deg, #001a4d 0%, #003d99 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-adicionar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 26, 77, 0.4);
+        }
+
+        .btn-export {
+            background: #c4a747;
+            color: #001a4d;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-export:hover {
+            background: #a68a3a;
+            color: white;
+        }
+
+        .entries-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 3px solid #f0f0f0;
+        }
+
+        .entries-title {
+            color: #001a4d;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .entry-item {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid #c4a747;
+        }
+
+        .entry-date {
+            color: #001a4d;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .entry-field {
+            margin-bottom: 12px;
+        }
+
+        .entry-field-label {
+            color: #c4a747;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .entry-field-content {
+            color: #333;
+            line-height: 1.6;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
+        .entry-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-edit {
+            background: #001a4d;
+            color: #c4a747;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .btn-delete:hover {
+            background: #d32f2f;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 26, 77, 0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 26, 77, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #001a4d;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #001a4d 0%, #003d99 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📔 Meu Diário</h1>
+            <div class="header-subtitle">IMPULSA - Registre seus momentos</div>
+            <div class="nome-diario" id="nomeDiarioDisplay">Seu diário</div>
+        </div>
+
+        <div class="content">
+            <div class="nome-section">
+                <label>Nome do seu diário:</label>
+                <input type="text" id="nomeDiario" placeholder="Ex: Diário da Silviane" value="Meu Diário">
+            </div>
+
+            <div class="calendario-section">
+                <div class="calendario-header">
+                    <button class="btn-nav" onclick="mesAnterior()">← Anterior</button>
+                    <div class="mes-ano" id="mesAnoDisplay">Agosto 2026</div>
+                    <button class="btn-nav" onclick="proximoMes()">Próximo →</button>
+                </div>
+                <div class="calendario-grid" id="calendarioGrid"></div>
+            </div>
+
+            <div class="data-section">
+                <div class="data-input-group">
+                    <label>Data:</label>
+                    <input type="date" id="dataEntrada">
+                </div>
+                <button class="btn-hoje" onclick="definirHoje()">Hoje</button>
+            </div>
+
+            <div class="versiculo-section">
+                <div class="versiculo-title">✨ Versículo do Dia</div>
+                <div class="versiculo-text" id="versiculoDisplay"></div>
+            </div>
+
+            <div class="form-section">
+                <label>😔 O que mais me chateou hoje?</label>
+                <div class="emoji-picker">
+                    <button class="emoji-btn" onclick="inserirEmoji('chateou', '😔')">😔</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('chateou', '😠')">😠</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('chateou', '😢')">😢</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('chateou', '😤')">😤</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('chateou', '😞')">😞</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('chateou', '😕')">😕</button>
+                </div>
+                <textarea id="chateou" placeholder="Descreva o que te chateou..."></textarea>
+            </div>
+
+            <div class="form-section">
+                <label>😊 O que mais me alegrou hoje?</label>
+                <div class="emoji-picker">
+                    <button class="emoji-btn" onclick="inserirEmoji('alegrou', '😊')">😊</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('alegrou', '😄')">😄</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('alegrou', '😍')">😍</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('alegrou', '🥰')">🥰</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('alegrou', '😃')">😃</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('alegrou', '🎉')">🎉</button>
+                </div>
+                <textarea id="alegrou" placeholder="Descreva algo bom do seu dia..."></textarea>
+            </div>
+
+            <div class="form-section">
+                <label>⭐ Importante dizer:</label>
+                <div class="emoji-picker">
+                    <button class="emoji-btn" onclick="inserirEmoji('importante', '🩸')">🩸</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('importante', '💊')">💊</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('importante', '🏥')">🏥</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('importante', '⚠️')">⚠️</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('importante', '📌')">📌</button>
+                    <button class="emoji-btn" onclick="inserirEmoji('importante', '💬')">💬</button>
+                </div>
+                <textarea id="importante" placeholder="Ex: estou menstruando, tenho dor de cabeça, etc..."></textarea>
+            </div>
+
+            <div class="buttons-section">
+                <button class="btn-adicionar" onclick="adicionarEntrada()">➕ Adicionar Entrada</button>
+                <button class="btn-export" onclick="exportarCSV()">📊 Exportar CSV</button>
+            </div>
+
+            <div class="entries-section">
+                <div class="entries-title">📚 Minhas Entradas</div>
+                <div id="entriesList">
+                    <div class="empty-state">
+                        <p>Nenhuma entrada ainda. Comece a escrever! 💭</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="edicaoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Entrada</h2>
+                <button class="close-btn" onclick="fecharEdicaoModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label style="color: #001a4d; font-weight: bold;">Data:</label>
+                    <input type="date" id="editData" style="width: 100%; margin-top: 8px; padding: 12px 15px; border: 2px solid #c4a747; border-radius: 8px;">
+                </div>
+                <div>
+                    <label style="color: #001a4d; font-weight: bold;">O que mais me chateou?</label>
+                    <textarea id="editChateou" style="margin-top: 8px; border: 2px solid #c4a747; padding: 15px; border-radius: 8px; min-height: 100px; width: 100%; font-family: inherit;"></textarea>
+                </div>
+                <div>
+                    <label style="color: #001a4d; font-weight: bold;">O que mais me alegrou?</label>
+                    <textarea id="editAlegrou" style="margin-top: 8px; border: 2px solid #c4a747; padding: 15px; border-radius: 8px; min-height: 100px; width: 100%; font-family: inherit;"></textarea>
+                </div>
+                <div>
+                    <label style="color: #001a4d; font-weight: bold;">Importante dizer:</label>
+                    <textarea id="editImportante" style="margin-top: 8px; border: 2px solid #c4a747; padding: 15px; border-radius: 8px; min-height: 100px; width: 100%; font-family: inherit;"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn-cancel" onclick="fecharEdicaoModal()">Cancelar</button>
+                    <button class="btn-save" onclick="salvarEdicao()">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let entradas = [];
+        let entradaAtualEdit = null;
+        let mesAtual = new Date().getMonth();
+        let anoAtual = new Date().getFullYear();
+
+        const versiculos = [
+            { texto: "Porque Deus não nos deu espírito de covardia, mas de poder, de amor e de equilíbrio mental.", referencia: "2 Timóteo 1:7" },
+            { texto: "Posso todas as coisas em Cristo que me fortalece.", referencia: "Filipenses 4:13" },
+            { texto: "Porque eu sou o Senhor, teu Deus, que te segura pela mão direita e te diz: Não temas, eu te ajudarei.", referencia: "Isaías 41:13" },
+            { texto: "Lança sobre o Senhor o teu cuidado, e ele te sustentará.", referencia: "Salmo 55:22" },
+            { texto: "Porque o Senhor é bom, e a sua misericórdia dura para sempre.", referencia: "Salmo 100:5" },
+            { texto: "Tudo posso naquele que me fortalece.", referencia: "Filipenses 4:13" },
+            { texto: "Não se turbe o vosso coração; credes em Deus, crede também em mim.", referencia: "João 14:1" },
+            { texto: "Porque nele vivemos, nos movemos e existimos.", referencia: "Atos 17:28" },
+            { texto: "Bem-aventurado aquele que confia no Senhor.", referencia: "Jeremias 17:7" },
+            { texto: "O Senhor é a minha luz e a minha salvação.", referencia: "Salmo 27:1" }
+        ];
+
+        window.addEventListener('load', inicializarApp);
+
+        function inicializarApp() {
+            definirDataHoje();
+            carregarEntradas();
+            carregarNomeDiario();
+            exibirVersiculo();
+            renderizarCalendario();
+            renderizarEntradas();
+        }
+
+        function definirDataHoje() {
+            const hoje = new Date();
+            const ano = hoje.getFullYear();
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            document.getElementById('dataEntrada').value = `${ano}-${mes}-${dia}`;
+        }
+
+        function definirHoje() {
+            definirDataHoje();
+        }
+
+        function carregarNomeDiario() {
+            const nomeSalvo = localStorage.getItem('nomeDiario') || 'Meu Diário';
+            document.getElementById('nomeDiario').value = nomeSalvo;
+            document.getElementById('nomeDiarioDisplay').textContent = nomeSalvo;
+        }
+
+        function atualizarNomeDiario() {
+            const nome = document.getElementById('nomeDiario').value.trim() || 'Meu Diário';
+            localStorage.setItem('nomeDiario', nome);
+            document.getElementById('nomeDiarioDisplay').textContent = nome;
+        }
+
+        document.getElementById('nomeDiario').addEventListener('change', atualizarNomeDiario);
+
+        function exibirVersiculo() {
+            const hoje = new Date();
+            const dia = hoje.getDate();
+            const versiculo = versiculos[dia % versiculos.length];
+            document.getElementById('versiculoDisplay').innerHTML = 
+                `"${versiculo.texto}" <br><br><strong>${versiculo.referencia}</strong>`;
+        }
+
+        function renderizarCalendario() {
+            const calendarioGrid = document.getElementById('calendarioGrid');
+            const mesAnoDisplay = document.getElementById('mesAnoDisplay');
+
+            const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                              'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+            mesAnoDisplay.textContent = `${nomesMeses[mesAtual]} ${anoAtual}`;
+
+            const primeiroDia = new Date(anoAtual, mesAtual, 1);
+            const ultimoDia = new Date(anoAtual, mesAtual + 1, 0);
+            const diasAnterior = new Date(anoAtual, mesAtual, 0).getDate();
+            const diasMes = ultimoDia.getDate();
+            const diaInicio = primeiroDia.getDay();
+
+            let html = '';
+
+            const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+            diasSemana.forEach(dia => {
+                html += `<div class="dia-semana">${dia}</div>`;
+            });
+
+            for (let i = diaInicio - 1; i >= 0; i--) {
+                html += `<div class="dia outro-mes">${diasAnterior - i}</div>`;
+            }
+
+            const hoje = new Date();
+            for (let dia = 1; dia <= diasMes; dia++) {
+                const data = `${anoAtual}-${String(mesAtual + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+                const temEntrada = entradas.some(e => e.data === data);
+                const ehHoje = hoje.getDate() === dia && hoje.getMonth() === mesAtual && hoje.getFullYear() === anoAtual;
+
+                let classes = 'dia';
+                if (temEntrada) classes += ' preenchido';
+                if (ehHoje) classes += ' hoje';
+
+                html += `<div class="${classes}" onclick="selecionarDataCalendario('${data}')">${dia}</div>`;
+            }
+
+            const diasRestantes = 42 - (diaInicio + diasMes);
+            for (let dia = 1; dia <= diasRestantes; dia++) {
+                html += `<div class="dia outro-mes">${dia}</div>`;
+            }
+
+            calendarioGrid.innerHTML = html;
+        }
+
+        function mesAnterior() {
+            mesAtual--;
+            if (mesAtual < 0) {
+                mesAtual = 11;
+                anoAtual--;
+            }
+            renderizarCalendario();
+        }
+
+        function proximoMes() {
+            mesAtual++;
+            if (mesAtual > 11) {
+                mesAtual = 0;
+                anoAtual++;
+            }
+            renderizarCalendario();
+        }
+
+        function selecionarDataCalendario(data) {
+            document.getElementById('dataEntrada').value = data;
+            const entrada = entradas.find(e => e.data === data);
+            if (entrada) {
+                document.getElementById('chateou').value = entrada.chateou;
+                document.getElementById('alegrou').value = entrada.alegrou;
+                document.getElementById('importante').value = entrada.importante;
+            } else {
+                document.getElementById('chateou').value = '';
+                document.getElementById('alegrou').value = '';
+                document.getElementById('importante').value = '';
+            }
+        }
+
+        function inserirEmoji(idCampo, emoji) {
+            const campo = document.getElementById(idCampo);
+            campo.value += emoji;
+            campo.focus();
+        }
+
+        function adicionarEntrada() {
+            const data = document.getElementById('dataEntrada').value;
+            const chateou = document.getElementById('chateou').value.trim();
+            const alegrou = document.getElementById('alegrou').value.trim();
+            const importante = document.getElementById('importante').value.trim();
+
+            if (!chateou && !alegrou && !importante) {
+                alert('Escreva algo em pelo menos um campo!');
+                return;
+            }
+
+            const entradaExistente = entradas.findIndex(e => e.data === data);
+
+            if (entradaExistente !== -1) {
+                entradas[entradaExistente] = { data, chateou, alegrou, importante };
+            } else {
+                entradas.push({ data, chateou, alegrou, importante });
+            }
+
+            salvarEntradas();
+            document.getElementById('chateou').value = '';
+            document.getElementById('alegrou').value = '';
+            document.getElementById('importante').value = '';
+
+            renderizarCalendario();
+            renderizarEntradas();
+            alert('✨ Entrada adicionada com sucesso!');
+        }
+
+        function renderizarEntradas() {
+            const entriesList = document.getElementById('entriesList');
+
+            if (entradas.length === 0) {
+                entriesList.innerHTML = '<div class="empty-state"><p>Nenhuma entrada ainda. Comece a escrever! 
+
